@@ -8,7 +8,7 @@ class PostsController < ApplicationController
   end
 
   def create 
-    @post = Post.new
+    @post = Post.new(post_params)
     @post.user_id = current_user.id
     if @post.save
       flash[:success] = "投稿しました。"
@@ -27,9 +27,31 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
+  def update
+    @post = Post.find(params[:id])
+    if @post.update(post_params)
+      flash[:success] = "投稿を編集しました。"
+      redirect_to root_path
+    else
+      flash.now[:error] = "編集に失敗しました。"
+      render 'edit'
+    end
+  end
+
+  def destroy
+    @post = Post.find(params[:id])
+    if @post.destroy
+      flash[:success] = "投稿を削除しました。"
+      redirect_to root_path
+    else
+      flash.now[:error] = "削除に失敗しました。"
+      render 'index'
+    end
+  end
+
   private
     def post_params
-      params.require(:post).permit(:title, :content)
+      params.require(:post).permit(:content)
     end
 
 end
